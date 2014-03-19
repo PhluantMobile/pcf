@@ -72,12 +72,13 @@ pcf = {
 			clearTimeout(ajaxTimeout);
 			if (ajaxRequest.readyState == 4 && ajaxRequest.status == 200) {
 				if(typeof(vars.js_object) != 'undefined'){
+					var resp = ajaxRequest.responseText;
 					if(vars.js_object){
-						ajaxRequest.responseText = JSON.stringify(ajaxRequest.responseText);
+						resp = JSON.parse(resp);
 					}
 				}
 				if(typeof(vars.callback) != 'undefined'){
-					vars.callback(ajaxRequest.responseText);
+					vars.callback(resp);
 				}
         	}
         	else{
@@ -89,7 +90,6 @@ pcf = {
 	        	}
         	}
 		}
-    	
 	},
 	capitalize: function(str){
 		return str.charAt(0).toUpperCase()+str.slice(1);
@@ -181,6 +181,7 @@ pcf = {
         });
 	},
 	get_stores: function(vars){
+		console.log(vars);
 		var varsExport = {
 			'url': this.webServiceUrl+'phluant/export',
 			'method': 'GET',
@@ -211,7 +212,7 @@ pcf = {
 		}
 		var mapOptions = {
 	        zoom: mapZoom,
-	        center: new google.maps.LatLng(vars.lat, vars.lng),
+	        center: new google.maps.LatLng(vars.center_lat, vars.center_lng),
 	        disableDefaultUI: true,
 	        mapTypeId: google.maps.MapTypeId.ROADMAP
 	    };
@@ -234,26 +235,29 @@ pcf = {
 		        	map: map,
 		        };
 		        var ignore = ['lat', 'lng', 'clickthru'];
+		        console.log(marker);
 		        for(var m in marker){
-		        	if(ignore.indexOf(marker[m]) != -1){
+		        	if(ignore.indexOf(marker[m]) == -1){
 		        		defaults[m] = marker[m];
 		        	}
 		        }
 		        var newMarker = new google.maps.Marker(defaults);
 		        if(typeof(marker.clickthru) != 'undefined'){
+		        	newMarker.clickthru = marker.clickthru;
 		        	google.maps.event.addListener(newMarker, 'click', function() {
-			            var url = 'http://maps.google.com/?saddr='+vars.lat+','+vars.lng+'&daddr='+marker.lat+','+marker.lng;
-			            if(typeof(marker.clickthru.url) != 'undefined'){
-			            	url = marker.clickthru.url;
+		        		console.log(this);
+			            var url = 'http://maps.google.com/?saddr='+vars.user_lat+','+vars.user_lng+'&daddr='+this.position.k+','+this.position.A;
+			            if(typeof(this.clickthru.url) != 'undefined'){
+			            	url = this.clickthru.url;
 			            }
-			            if(this.isPhad){
-			            	if(this.phadConsoleLog){
-			            		ph.u.log(marker.clickthru.name);
+			            if(pcf.isPhad){
+			            	if(pcf.phadConsoleLog){
+			            		ph.u.log(this.clickthru.name);
 			            	}
-			            	ph.u.clickthru(url, marker.clickthru.name, this.sessionID);
+			            	ph.u.clickthru(url, this.clickthru.name, pcf.sessionID);
 			            }
 			            else{
-			            	console.log(marker.clickthru.name);
+			            	console.log(this.clickthru.name);
 			            	window.open(url, '_blank');
 			            }
 			        });
@@ -266,7 +270,7 @@ pcf = {
 			this.geocoder = new google.maps.Geocoder();
 		}
 		var self = this;
-		geocoder.geocode( { 'address': encodeURIComponent(vars.address)}, function(results, status) {
+		this.geocoder.geocode( { 'address': encodeURIComponent(vars.address)}, function(results, status) {
 			if(status == google.maps.GeocoderStatus.OK) {
 				vars.callback(results);
 	         }
