@@ -245,7 +245,6 @@ pcf = {
 		        if(typeof(marker.clickthru) != 'undefined'){
 		        	newMarker.clickthru = marker.clickthru;
 		        	google.maps.event.addListener(newMarker, 'click', function() {
-		        		console.log(this);
 			            var url = 'http://maps.google.com/?saddr='+vars.user_lat+','+vars.user_lng+'&daddr='+this.position.k+','+this.position.A;
 			            if(typeof(this.clickthru.url) != 'undefined'){
 			            	url = this.clickthru.url;
