@@ -420,8 +420,12 @@ pcf = {
 			'attributes': {
 				'webkit-playsinline': false,
 				'controls': true,
-			}	
+			},
+			'hide_close_btn': true
 		};
+		if(typeof(vars.hide_close_btn) == 'boolean'){
+			properties.hide_close_btn = vars.hide_close_btn;
+		}
 		if(typeof(vars.style) != 'undefined'){
 			for(var i in vars.style){
 				properties.style[i] = vars.style[i];
@@ -440,10 +444,8 @@ pcf = {
 		}
 		if(this.isPhad){
 			ph.v.play(vars.video_url, vars.name, this.campaignID, this.executionID, this.sessionID, this.videoId);
-			if(typeof(vars.hide_close_btn) != 'undefined'){
-				if(vars.hide_close_btn){
-					phVidClose.style.display = 'none';
-				}
+			if(properties.hide_close_btn){
+				phVidClose.style.display = 'none';
 			}
 		}
 		else{
