@@ -1,5 +1,6 @@
 /*Phluant Client Framework v0.9 | (c) 2014 Phluant, Inc. All rights Reserved | See documentation for more details*/
 pcf = {
+	adInit: null,
 	adIsExpanded: false,
 	closeCallback: null,
 	geocoder: null,
@@ -305,6 +306,9 @@ pcf = {
 		if(typeof(vars.callback) != 'undefined'){
 			this.closeCallback = vars.callback;
 		}
+		if(typeof(vars.init) != 'undefined'){
+			this.adInit = vars.init;
+		}
 		if(typeof(vars.expanded) != 'undefined'){
 			if(vars.expanded){
 				self.adIsExpanded = true;
@@ -449,7 +453,7 @@ pcf = {
 		if(this.isPhad){
 			ph.v.play(vars.video_url, vars.name, this.campaignID, this.executionID, this.sessionID, this.videoId);
 			if(properties.hide_close_btn){
-				phVidClose.style.display = 'none';
+				this.gid('phVidClose').style.display = 'none';
 			}
 		}
 		else{
