@@ -314,7 +314,10 @@ pcf = {
 				self.adIsExpanded = true;
 			}
 		}
-		if (typeof(mraid) != "undefined"){
+		if(typeof(mraid) != "undefined"){
+			if(this.adInit == null){
+				console.log('An initialization function must be set for ')
+			}
 		    self.isMraid = true;
 		    mraid.setExpandProperties({useCustomClose:true});
 		    mraid.addEventListener('stateChange', function(){
@@ -332,6 +335,19 @@ pcf = {
 		    newMetaTag.content = "width=device-width, minimum-scale=1.0, maximum-scale=1.0";
 		    document.getElementsByTagName('head')[0].appendChild( newMetaTag );
 		}
+		if(typeof(self.adInit) != null){
+			if(self.isMraid){
+				if(mraid.getState() === 'loading'){
+					mraid.addEventListener('viewableChange', self.mraid_ready);
+				}
+				else{
+					self.mraid_ready();
+				}
+			}
+			else{
+				self.adInit();
+			}
+		}
 	},
 	iosVersionCheck: function() {
 	    var agent = window.navigator.userAgent,
@@ -340,6 +356,20 @@ pcf = {
 	        return window.Number( agent.substr( start + 3, 3 ).replace( '_', '.' ) );
 	    }
 	    return 0;
+	},
+	mraid_ready: function(){
+		if(mraid.isViewable){
+			this.mraid_change();
+		}
+		else{
+			mraid.addEventListener('viewableChange', this.mraid_change);
+		}
+	},
+	mraid_change: function(){
+		if (mraid.isViewable()) {
+        	mraidResize(currW, currH);
+        	setTimeout(function(){this.adInit();},125);
+    	}
 	},
 	query_string: function(jsonConvert){
 		var url = window.location.href;
@@ -453,7 +483,10 @@ pcf = {
 		if(this.isPhad){
 			ph.v.play(vars.video_url, vars.name, this.campaignID, this.executionID, this.sessionID, this.videoId);
 			if(properties.hide_close_btn){
-				this.gid('phVidClose').style.display = 'none';
+				var phVidClose = this.gid('phVidClose');
+				if(phVidClose){
+					phVidClose.style.display = 'none';
+				}
 			}
 		}
 		else{
