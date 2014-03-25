@@ -442,6 +442,7 @@ pcf = {
 		if(typeof(this.videoId) == 'string'){
 			this.videoId = this.gid(this.videoId);
 		}
+		console.log(this.videoId);
 		var properties = {
 			'aspect_ratio': '16:9',
 			'style': {
@@ -494,6 +495,9 @@ pcf = {
 			this.videoId.innerHTML = videoHtml;
 		}
 		var ph_videoElement = this.videoId.getElementsByTagName('video')[0];
+		console.log('showing elements');
+		console.log(this.videoId);
+		console.log(ph_videoElement);
 		if(ph_videoElement){
 			for(var i in properties.attributes){
 				ph_videoElement.setAttribute(i, properties.attributes[i]);
@@ -502,6 +506,7 @@ pcf = {
 				ph_videoElement.style[i] = properties.style[i];
 			}
 			setTimeout(function(){
+				console.log('about to play');
 				ph_videoElement.play();
 			},500);
 			 ph_videoElement.addEventListener('ended', function(){
