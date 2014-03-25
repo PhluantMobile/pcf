@@ -33,6 +33,7 @@ pcf = {
 	executionID: null,
 	campaignID: null,
 	sessionID: null,
+	container: null,
 	webServiceUrl: 'http://lbs.phluant.com/web_services/',
 	ajax: function(vars){
 		ajaxRequest = new XMLHttpRequest(); 
@@ -321,7 +322,7 @@ pcf = {
 		        }
 		    });
 		    document.body.style.margin="0px";
-		    container.style.position="absolute";
+		    this.container.style.position="absolute";
 		    var newMetaTag = document.createElement('meta');
 		    newMetaTag.name = "viewport";
 		    newMetaTag.content = "width=device-width, minimum-scale=1.0, maximum-scale=1.0";
