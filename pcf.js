@@ -494,21 +494,23 @@ pcf = {
 			this.videoId.innerHTML = videoHtml;
 		}
 		ph_videoElement = this.videoId.getElementsByTagName('video')[0];
-		for(var i in properties.attributes){
-			ph_videoElement.setAttribute(i, properties.attributes[i]);
+		if(ph_videoElement){
+			for(var i in properties.attributes){
+				ph_videoElement.setAttribute(i, properties.attributes[i]);
+			}
+			for(var i in properties.style){
+				ph_videoElement.style[i] = properties.style[i];
+			}
+			setTimeout(function(){
+				ph_videoElement.play();
+			},500);
+			 ph_videoElement.addEventListener('ended', function(){
+		        self.video_close();
+		    });
+		    ph_videoElement.addEventListener('webkitendfullscreen', function(){
+		        self.video_close();
+			});
 		}
-		for(var i in properties.style){
-			ph_videoElement.style[i] = properties.style[i];
-		}
-		setTimeout(function(){
-			ph_videoElement.play();
-		},500);
-		 ph_videoElement.addEventListener('ended', function(){
-	        self.video_close();
-	    });
-	    ph_videoElement.addEventListener('webkitendfullscreen', function(){
-	        self.video_close();
-		});
 	},
 	video_close: function(){
 		if(this.isPhad){
