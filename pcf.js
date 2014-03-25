@@ -482,6 +482,7 @@ pcf = {
 			properties.style.width = properties.style.height.replace('px','')*(ar[0]/[1])+'px';
 		}
 		if(this.isPhad){
+			console.log('about to add video');
 			ph.v.play(vars.video_url, vars.name, this.campaignID, this.executionID, this.sessionID, this.videoId);
 			if(properties.hide_close_btn){
 				var phVidClose = this.gid('phVidClose');
