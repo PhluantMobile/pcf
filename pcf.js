@@ -493,7 +493,7 @@ pcf = {
 			var videoHtml = '<video src="'+vars.video_url+'"></video>';
 			this.videoId.innerHTML = videoHtml;
 		}
-		ph_videoElement = this.videoId.getElementsByTagName('video')[0];
+		var ph_videoElement = this.videoId.getElementsByTagName('video')[0];
 		if(ph_videoElement){
 			for(var i in properties.attributes){
 				ph_videoElement.setAttribute(i, properties.attributes[i]);
