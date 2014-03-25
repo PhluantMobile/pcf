@@ -483,6 +483,8 @@ pcf = {
 		}
 		if(this.isPhad){
 			console.log('about to add video');
+			console.log(vars);
+			console.log(this.campaignID+', '+this.executionID+', '+this.sessionID);
 			ph.v.play(vars.video_url, vars.name, this.campaignID, this.executionID, this.sessionID, this.videoId);
 			if(properties.hide_close_btn){
 				var phVidClose = this.gid('phVidClose');
