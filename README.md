@@ -237,6 +237,7 @@ Optional Attributes:
 * style.xx: Any native JavaScript styling attribute can be utilized.
 * attributes.webkit-playsinline: Default is false.  Must be a boolean.  Some devices may not support inline video in certain environments.
 * attributes.controls: Default is true.  Most be a boolean.
+* attributes.xx: Any HTML5 standard attribute is supported.
 * aspect_ratio: Default is 16:9 and used if height or width of parent element can't be determined.  Can be overwritten.
 * hide_close_button: Specific to ads running in Phluant's ad serving network.  Default is true.  Must be a boolean.
 

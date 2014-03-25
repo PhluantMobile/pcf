@@ -425,9 +425,13 @@ pcf = {
 		if(typeof(vars.hide_close_btn) == 'boolean'){
 			properties.hide_close_btn = vars.hide_close_btn;
 		}
-		if(typeof(vars.style) != 'undefined'){
-			for(var i in vars.style){
-				properties.style[i] = vars.style[i];
+		var checkFor = ['style', 'attributes'];
+		for(var i=0; i<checkFor.length; i++){
+			var attr = checkFor[i];
+			if(typeof(vars[attr]) != 'undefined'){
+				for(var v in vars[attr]){
+					properties[attr][v] = vars[attr][v];
+				}
 			}
 		}
 		var ar = properties.aspect_ratio.split(':');
@@ -453,9 +457,6 @@ pcf = {
 		}
 		ph_videoElement = this.videoId.getElementsByTagName('video')[0];
 		for(var i in properties.attributes){
-			if(typeof(vars.attributes[i]) != 'undefined'){
-				properties.attributes[i] = vars.attributes[i];
-			}
 			ph_videoElement.setAttribute(i, properties.attributes[i]);
 		}
 		for(var i in properties.style){
