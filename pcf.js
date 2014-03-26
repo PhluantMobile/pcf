@@ -566,7 +566,6 @@ pcf = {
 	},
 	video_full_screen: function(elem){
 		var self = this;
-		console.log('in full screen');
 		var endEvent = 'endfullscreen';
 		if(elem.requestFullscreen) {
 		    elem.requestFullscreen();
@@ -587,17 +586,6 @@ pcf = {
 	        self.video_close();
 		});
 	},
-	/*
-	video_play: function(elem){
-		console.log('in video play function');
-		if(this.video_properties.full_screen){
-			this.video_full_screen(elem);
-		}
-		if(typeof(this.video_properties.play_callback )== 'function'){
-			this.video_properties.play_callback();
-		}
-	},
-	*/
 }
 pcf.iosVersion = pcf.iosVersionCheck();
 if(typeof(ph) == 'object'){
