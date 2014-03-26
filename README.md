@@ -70,6 +70,12 @@ _Required for any campaign that will have multiple ad instances served, and is r
 
 This function initializes the framework for expandable ads and interstitial/banner ads that need close functionalty.  It also initializes any MRAID specific functionality if the MRAID framework is detected.  The developer will need to ensure an appropriate callback function is designated for contracting/closing the ad.  If the callback function contains object function calls, the object must have an explicit reference.
 
+Specs:
+
+* callback: The close function for an expanded ad.  Required for any expandable ad running on MRAID.  Recommended in all cases.
+* init: The initialization function for an ad.  Required for any ad running on MRAID.  Recommended in all cases.
+* expanded: Default is false.  Only required for interstitial ads.
+
 Example:
 
 ```
@@ -79,10 +85,14 @@ function contractAd(){
 	contract_div.style.display = 'block';
 }
 
-//Including the expand attribute is optional for expandable ads starting out in the contracted state.  For interstitial/banner ads, set the attribute to true.  Including the callback attribute is optional for interstitial and banner ads not requiring close functionality.
+function initialize(){
+	//Initialization code.
+}
+
 pcf.init({
 	'callback': contractAd,
 	'expanded': false,
+	'init': initialize
 });
 </script>
 ```
@@ -229,21 +239,27 @@ This function ensures that any HTML5 video that needs to be played can have the 
 
 Required Attributes:
 
+* container_id: The DOM element ID for the video container.
 * video_url: The URL for the video source.  Can be relative (same server) or absolute (remote server).
-* container_id: The DOM element ID for the video centainer.
 
 Optional Attributes:
 
-* style.xx: Any native JavaScript styling attribute can be utilized.
 * attributes.webkit-playsinline: Default is false.  Must be a boolean.  Some devices may not support inline video in certain environments.
 * attributes.controls: Default is true.  Most be a boolean.
-* attributes.xx: Any HTML5 standard attribute is supported.
+* attributes.autoplay: Default is true.  Mobile devices will not autoplay a video in a mobile web environment on initial load, but will autoplay on an ad expansion.
+* attributes.xx: Any standard HTML5 video attribute can be utilized.
 * aspect_ratio: Default is 16:9 and used if height or width of parent element can't be determined.  Can be overwritten.
+* close_callback: Default is null.  A function can be specified to call up on the video ending.
+* full_screen: Default is false.  Will expand to full screen if set to true on supported devices and will override webkit-playsinline.
 * hide_close_button: Specific to ads running in Phluant's ad serving network.  Default is true.  Must be a boolean.
+* pause_callback: Default is null.  A function can be specified to call up on the video pausing.
+* play_callback: Default is null.  A function can be specified to call up on the video ending.
+* reload: Default is false.  Phluant's video framework destroys the video instance by default.  Setting reload to true will override this.
+* style.xx: Any native JavaScript styling attribute can be utilized.
 
 Additional Notes:
 
-* The video tag will take on the height and width of the parent container by default, so be sure these are set properly!  The default z-index is 5000.  These values can be overwritten, along with any other styling attributes inserted as needed.
+* The video tag will take on the height and width of the parent container by default, so be sure these are set properly!  The default z-index is 5000.  These values can be overwritten.
 * Be sure to utilize the ```pcf.videoPlaying``` boolean if using a click function call, as this will ensure the video isn't called multiple times.
 
 Example:
