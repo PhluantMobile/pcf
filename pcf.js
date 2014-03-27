@@ -500,7 +500,7 @@ pcf = {
 		}
 		if(this.isPhad){
 			ph.v.play(this.video_properties.video_url, this.video_properties.name, this.campaignID, this.executionID, this.sessionID, cid);
-			if(properties.hide_close_btn){
+			if(this.video_properties.hide_close_btn){
 				var phVidClose = this.gid('phVidClose');
 				if(phVidClose){
 					phVidClose.style.display = 'none';
