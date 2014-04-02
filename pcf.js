@@ -59,8 +59,10 @@ pcf = {
 	container: null,
 	webServiceUrl: 'http://lbs.phluant.com/web_services/',
 	ajax: function(vars){
+		console.log(vars);
 		ajaxRequest = new XMLHttpRequest(); 
 		var sendData = '';
+		console.log(typeof(vars.data));
 		if(typeof(vars.data) != 'undefined'){
 				for(var i in vars.data){
 				if(sendData != ''){
@@ -69,13 +71,15 @@ pcf = {
 				sendData += i+'='+encodeURIComponent(vars.data[i]);
 			}
 		}
-		if(vars.method == 'GET' && sendData != ''){
+		console.log(sendData);
+		if(vars.method != 'POST' && sendData != ''){
 			vars.url += '?'+sendData;
 		}
 		var timeout = 10000;
 		if(typeof(vars.timeout) == 'number'){
 			timeout = vars.timeout;
 		}
+		console.log(vars.url);
 		ajaxRequest.open(vars.method, vars.url, true);
 		if(vars.method == 'POST'){
 			ajaxRequest.setRequestHeader("Content-type","application/x-www-form-urlencoded");
@@ -304,7 +308,10 @@ pcf = {
 		    });
 		}
 		else{
+			console.log(vars.address);
 			this.geocoder.geocode( { 'address' : encodeURIComponent(vars.address)}, function(results, status) {
+				console.log(results);
+				console.log(status);
 				self.gmaps_return(results, status, vars);
 		    });
 		}
