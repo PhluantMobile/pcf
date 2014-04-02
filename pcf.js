@@ -261,7 +261,6 @@ pcf = {
 		        	map: map,
 		        };
 		        var ignore = ['lat', 'lng', 'clickthru'];
-		        console.log(marker);
 		        for(var m in marker){
 		        	if(ignore.indexOf(marker[m]) == -1){
 		        		defaults[m] = marker[m];
@@ -291,39 +290,53 @@ pcf = {
     	}
 	},
 	gmaps_geo: function(vars){
+		var locType = 'address';
+		if(typeof(vars.loc_type) != 'undefined'){
+			locType = vars.loc_type;
+		}
 		if(this.geocoder == null){
 			this.geocoder = new google.maps.Geocoder();
 		}
 		var self = this;
-		this.geocoder.geocode( { 'address': encodeURIComponent(vars.address)}, function(results, status) {
-			if(status == google.maps.GeocoderStatus.OK) {
-				vars.callback(results);
-	         }
-	         else{
-	         	if(typeof(vars.failover) == 'boolean'){
-	         		if(vars.failover){
-	         			var geoVars = {};
-	         			geoVars.callback = vars.callback;
-	         			if(typeof(vars.failover_callback) != 'undefined'){
-	         				geoVars.callback = vars.failover_callback;
-	         			}
-	         			if(this.valid_zip(address)){
-							geoVars.data.type =  'postal_code';
-						}
-						if(this.valid_geo(address)){
-							geoVars.data.type =  'city_postal_by_geo';
-						}
-						if(typeof(geoVars.data.type) != 'undefined'){
-							geoVars.data.value = vars.address;
-						}
-	         			self.geolocation(geoVars);
-	         		}
-	         	}
-	         	else{
-	         		vars.callback(false);
-	         	}
-	         }
-	    });
+		if(locType == 'latLng'){
+			this.geocoder.geocode( { 'latLng' : vars.address}, function(results, status) {
+				self.gmaps_return(results, status, vars);
+		    });
+		}
+		else{
+			this.geocoder.geocode( { 'address' : encodeURIComponent(vars.address)}, function(results, status) {
+				self.gmaps_return(results, status, vars);
+		    });
+		}
+	},
+	gmaps_return: function(results, status, vars){
+		if(status == google.maps.GeocoderStatus.OK) {
+			vars.callback(results);
+         }
+         else{
+         	if(typeof(vars.failover) == 'boolean'){
+         		if(vars.failover){
+         			var geoVars = {};
+         			geoVars.callback = vars.callback;
+         			if(typeof(vars.failover_callback) != 'undefined'){
+         				geoVars.callback = vars.failover_callback;
+         			}
+         			if(this.valid_zip(address)){
+						geoVars.data.type =  'postal_code';
+					}
+					if(this.valid_geo(address)){
+						geoVars.data.type =  'city_postal_by_geo';
+					}
+					if(typeof(geoVars.data.type) != 'undefined'){
+						geoVars.data.value = vars.address;
+					}
+         			this.geolocation(geoVars);
+         		}
+         	}
+         	else{
+         		vars.callback(false);
+         	}
+         }
 	},
 	init: function(vars){
 		var self = this;
