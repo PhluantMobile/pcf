@@ -15,6 +15,7 @@ The Phluant Client Framework (PCF) Libaray is a framework for use by Phluant Mob
 	* [Weather](#weather)
 * [HTML5 geolocation prompt with optional IP lookup as a fallback](#geolocation-prompt)
 * [Store locator API call](#store-locator-api-call)
+* [Shoplocal API call](#shoplocal-api-call)
 * [Google Maps](#google-maps)
 	* [Geocoding](#geocoding)
 	* [Map Draw](#map-draw)
@@ -301,7 +302,7 @@ Phluant maintains a web based application capable of providing geolocation and w
 Geolocation Lookup Methods:
 
 * IP Address (default)
-* Postal Code
+* Postal Code (US and Canadian only)
 * City/Postal by Geo
 
 IP Address code example:
@@ -684,6 +685,7 @@ Required Specs:
 
 Optional Specs:
 * failover - Default is false.  The system will determine which method to use based on the address qualities.
+* loc_type - Default is address.  If set to geo, the library will do a reverse geocode so long as the address is set as lat,lng.  Google limits the number of reverse geocodes to 5 per page onload event, so use sparingly.
 * failover_callback - If a different callback from the regular failover is desired.  Be aware that if this value isn't specified and failover is set to true, the failover data will be returned to the regular callback function.
 
 Example:

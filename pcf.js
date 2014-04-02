@@ -301,12 +301,20 @@ pcf = {
 			this.geocoder = new google.maps.Geocoder();
 		}
 		var self = this;
-		if(locType == 'latLng'){
-			this.geocoder.geocode( { 'latLng' : vars.address}, function(results, status) {
-				self.gmaps_return(results, status, vars);
-		    });
-		}
-		else{
+		if(locType == 'geo' || 'latLng'){
+			if(this.valid_geo(vars.address)){
+				var geo = vars.address.split(',');
+				var latLng = new google.maps.LatLng(geo[0], geo[1]);
+				this.geocoder.geocode( { 'latLng' : latLng}, function(results, status) {
+					self.gmaps_return(results, status, vars);
+			    });
+			}
+			else{
+				console.log('Must be a valid lat/lng set for reverse geocoding');
+				return false;
+			}
+			
+		}		else{
 			console.log(vars.address);
 			this.geocoder.geocode( { 'address' : encodeURIComponent(vars.address)}, function(results, status) {
 				console.log(results);
