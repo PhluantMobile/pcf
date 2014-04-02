@@ -403,11 +403,11 @@ pcf = {
 		}
 	},
 	mraid_ready: function(){
-		if(mraid.isViewable) this.viewable_change();
+		if(mraid.isViewable()) this.viewable_change();
 		else mraid.addEventListener('viewableChange', this.viewable_change);
 	},
 	viewable_change: function(){
-		if(mraid.isViewable) { //TODO: don't check isViewable again
+		if(mraid.isViewable()) { //TODO: don't check isViewable again
 			this.track('viewableChange');
 			this.adInit();
 		}
