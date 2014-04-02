@@ -64,7 +64,7 @@ pcf = {
 		var sendData = '';
 		console.log(typeof(vars.data));
 		if(typeof(vars.data) != 'undefined'){
-				for(var i in vars.data){
+			for(var i in vars.data){
 				if(sendData != ''){
 					sendData += '&';
 				}
@@ -180,16 +180,15 @@ pcf = {
 		}
 	},
 	geolocation: function(vars){
+		console.log(vars);
 		var varsExport = {
 			'url': this.webServiceUrl+'geolocation/export',
 			'method': 'GET',
 			'callback': vars.callback,
 			'js_object': true,
 		};
-		if(typeof(vars.data) == 'object'){
-			for(var i in vars.data){
-				varsExport.data[i] = vars.data[i];
-			}
+		if(typeof(vars.data) != 'undefined'){
+			varsExport.data = vars.data;
 		}
 		this.ajax(varsExport);
 	},
