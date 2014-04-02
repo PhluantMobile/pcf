@@ -293,6 +293,7 @@ pcf = {
     	}
 	},
 	gmaps_geo: function(vars){
+		console.log(vars);
 		var locType = 'address';
 		if(typeof(vars.loc_type) != 'undefined'){
 			locType = vars.loc_type;
@@ -302,6 +303,7 @@ pcf = {
 		}
 		var self = this;
 		if(locType == 'geo' || 'latLng'){
+			console.log(vars.address);
 			if(this.valid_geo(vars.address)){
 				var geo = vars.address.split(',');
 				var latLng = new google.maps.LatLng(geo[0], geo[1]);
@@ -424,7 +426,7 @@ pcf = {
 	mraid_change: function(){
 		var self  = this;
 		if (mraid.isViewable()) {
-        	mraidResize(currW, currH);
+        	mraidResize(window.innerWidth, window.innerHeight);
         	setTimeout(function(){self.adInit();},125);
     	}
 	},
@@ -502,6 +504,7 @@ pcf = {
     },
 	valid_geo: function(geoTest){
 		passed = true;
+		console.log(geoTest);
 		geoTest = geoTest.split(',');
 		if(typeof(geoTest) == 'object'){
 			for(var i=0; i<geoTest.length; i++){
