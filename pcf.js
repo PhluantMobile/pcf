@@ -395,16 +395,21 @@ pcf = {
 		}
 		if(this.adInit != null){
 			if(this.isMraid){
-				if(mraid.getState() === 'loading'){
-					mraid.addEventListener('viewableChange', self.mraid_ready);
-				}
-				else{
-					this.mraid_ready();
-				}
+				if(mraid.getState() === 'loading')
+					mraid.addEventListener('ready', self.mraid_ready);
+				else this.mraid_ready();
 			}
-			else{
-				this.adInit();
-			}
+			else this.adInit();
+		}
+	},
+	mraid_ready: function(){
+		if(mraid.isViewable) this.viewable_change();
+		else mraid.addEventListener('viewableChange', this.viewable_change);
+	},
+	viewable_change: function(){
+		if(mraid.isViewable) { //TODO: don't check isViewable again
+			this.track('viewableChange');
+			this.adInit();
 		}
 	},
 	iosVersionCheck: function() {
@@ -414,20 +419,6 @@ pcf = {
 	        return window.Number( agent.substr( start + 3, 3 ).replace( '_', '.' ) );
 	    }
 	    return 0;
-	},
-	mraid_ready: function(){
-		if(mraid.isViewable){
-			this.mraid_change();
-		}
-		else{
-			mraid.addEventListener('viewableChange', this.mraid_change);
-		}
-	},
-	mraid_change: function(){
-		var self  = this;
-		if (mraid.isViewable()) {
-        	setTimeout(function(){self.adInit();},125);
-    	}
 	},
 	query_string: function(jsonConvert){
 		var url = window.location.href;
