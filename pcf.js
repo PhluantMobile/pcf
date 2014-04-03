@@ -1,6 +1,7 @@
 /*Phluant Client Framework v0.9 | (c) 2014 Phluant, Inc. All rights Reserved | See documentation for more details*/
 pcf = {
 	adInit: null,
+	winLoaded: false,
 	adIsExpanded: false,
 	closeCallback: null,
 	geocoder: null,
@@ -416,6 +417,10 @@ pcf = {
 	},
 	mraid_view_change: function(){
 		if(mraid.isViewable()) { /*TODO: don't check isViewable again*/
+			if (!this.winLoaded) { /*Mraid doesn't fire the load event,*/
+				winLoaded = true;  /*so we have to do it manually*/
+				window.dispatchEvent(new Event('load'));
+			}
 			this.track('viewableChange');
 			this.adInit();
 		}
@@ -640,7 +645,13 @@ pcf = {
 		});
 	},
 }
+
 pcf.iosVersion = pcf.iosVersionCheck();
+
 if(typeof(ph) == 'object'){
 	pcf.isPhad = true;
 }
+
+window.addEventListener('load', function(){
+	pcf.winLoaded = true;
+});
