@@ -422,7 +422,7 @@ pcf = {
 				window.dispatchEvent(new Event('load'));
 			}
 			this.track('viewableChange');
-			this.adInit();
+			setTimeout(this.adInit.bind(this)); /*delay init until load callbacks fired*/
 		}
 	},
 	query_string: function(jsonConvert){
