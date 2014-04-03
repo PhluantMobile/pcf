@@ -402,16 +402,6 @@ pcf = {
 			else this.adInit();
 		}
 	},
-	mraid_ready: function(){
-		if(mraid.isViewable()) this.viewable_change();
-		else mraid.addEventListener('viewableChange', this.viewable_change);
-	},
-	viewable_change: function(){
-		if(mraid.isViewable()) { //TODO: don't check isViewable again
-			this.track('viewableChange');
-			this.adInit();
-		}
-	},
 	iosVersionCheck: function() {
 	    var agent = window.navigator.userAgent,
 	        start = agent.indexOf( 'OS ' );
@@ -419,6 +409,16 @@ pcf = {
 	        return window.Number( agent.substr( start + 3, 3 ).replace( '_', '.' ) );
 	    }
 	    return 0;
+	},
+	mraid_ready: function(){
+		if(mraid.isViewable()) this.mraid_view_change();
+		else mraid.addEventListener('viewableChange', this.mraid_view_change);
+	},
+	mraid_view_change: function(){
+		if(mraid.isViewable()) { /*TODO: don't check isViewable again*/
+			this.track('viewableChange');
+			this.adInit();
+		}
 	},
 	query_string: function(jsonConvert){
 		var url = window.location.href;
