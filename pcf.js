@@ -369,6 +369,8 @@ pcf = {
 			}
 		}
 		if(typeof(mraid) != "undefined"){
+			/*
+			//commented out requirements for init and close functionality for the time being
 			if(this.adInit == null){
 				console.log('An initialization function must be set for MRAID to work properly.');
 				return false;
@@ -377,6 +379,7 @@ pcf = {
 				console.log('A close function must be set for MRAID to work properly.');
 				return false;
 			}
+			*/
 		    this.isMraid = true;
 		    mraid.setExpandProperties({useCustomClose:true});
 		    mraid.addEventListener('stateChange', function(){
