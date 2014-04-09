@@ -580,7 +580,7 @@ pcf = {
 			}
 			ph_videoElement.addEventListener('play', function(){
 				if(self.video_properties.full_screen){
-					self.video_full_screen(elem);
+					self.video_full_screen(ph_videoElement);
 				}
 				if(typeof(self.video_properties.play_callback )== 'function'){
 					self.video_properties.play_callback();
@@ -591,7 +591,7 @@ pcf = {
 					self.video_properties.pause_callback();
 				}
 			});
-			if(this.video_properties.attributes.autoplay){
+			if(this.video_properties.attributes.autoplay === true){
 				setTimeout(function(){
 					ph_videoElement.play();
 				},500);
