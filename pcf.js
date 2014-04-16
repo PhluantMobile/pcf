@@ -177,6 +177,8 @@ pcf = {
 		else{
 			var img = document.createElement("img");
 			img.src = url;
+			img.height = '1px';
+			img.width = '1px';
 			document.getElementsByTagName('body')[0].appendChild(img);
 		}
 	},
