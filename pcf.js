@@ -61,7 +61,7 @@ pcf = {
 	webServiceUrl: 'http://lbs.phluant.com/web_services/',
 	ajax: function(vars){
 		console.log(vars);
-		ajaxRequest = new XMLHttpRequest(); 
+		ajaxRequest = new XMLHttpRequest();
 		var sendData = '';
 		console.log(typeof(vars.data));
 		if(typeof(vars.data) != 'undefined'){
@@ -278,6 +278,9 @@ pcf = {
 			            if(typeof(this.clickthru.url) != 'undefined'){
 			            	url = this.clickthru.url;
 			            }
+									if(typeof(this.clickthru.callback) == 'function'){
+										this.clickthru.callback();
+									}
 			            if(pcf.isPhad){
 			            	if(pcf.phadConsoleLog){
 			            		ph.u.log(this.clickthru.name);
@@ -316,7 +319,7 @@ pcf = {
 				console.log('Must be a valid lat/lng set for reverse geocoding');
 				return false;
 			}
-			
+
 		}		else{
 			console.log(vars.address);
 			this.geocoder.geocode( { 'address' : encodeURIComponent(vars.address)}, function(results, status) {
@@ -494,7 +497,7 @@ pcf = {
 			console.log(name);
 		}
 	},
-	valid_email: function(email){ 
+	valid_email: function(email){
         var filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
         return filter.test(email);
     },
@@ -632,7 +635,7 @@ pcf = {
 		else if(elem.mozRequestFullScreen) {
 		    elem.mozRequestFullScreen();
 		    endEvent = 'mozendfullscreen';
-		} 
+		}
 		else if(elem.webkitRequestFullscreen) {
 			elem.webkitRequestFullscreen();
 			endEvent = 'webkitendfullscreen';
