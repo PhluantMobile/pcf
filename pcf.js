@@ -28,31 +28,14 @@ pcf = {
 	},
 	isMraid: false,
 	isPhad: false,
-	phadConsoleLog: false,
-	videoPlaying: false,
-	video_properties: {
-		'aspect_ratio': '16:9',
-		'attributes': {
-			'webkit-playsinline': false,
-			'controls': true,
-			'autoplay': true,
-		},
-		'container_id': null,
-		'close_callback': null,
-		'full_screen': false,
-		'hide_close_btn': true,
-		'pause_callback': null,
-		'play_callback': null,
-		'reload': false,
-		'style': {
-			'width': '320px',
-			'height': '180px',
-			'zIndex': 5000,
-			'margin': 0,
-			'padding': 0,
-		},
+	modules: {
+		'gmaps': ['https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key=AIzaSyC83uUhHCl_0zza5YFNYaBKBeVojsqGaOc','http://localhost:8000/repositories/pcf/modules/gmaps/pcf.gmaps.js'],
+		'bmaps': ['http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0', 'http://localhost:8000/repositories/pcf/modules/bmaps/pcf.bmaps.js'],
+		'video': ['http://localhost:8000/repositories/pcf/modules/video/pcf.video.js'],
 	},
-	videoReload: false,
+	modsLoaded: true;
+	phadConsoleLog: false,
+	scriptTag: null,
 	hashtag: null,
 	executionID: null,
 	campaignID: null,
@@ -60,10 +43,8 @@ pcf = {
 	container: null,
 	webServiceUrl: 'http://lbs.phluant.com/web_services/',
 	ajax: function(vars){
-		console.log(vars);
 		ajaxRequest = new XMLHttpRequest();
 		var sendData = '';
-		console.log(typeof(vars.data));
 		if(typeof(vars.data) != 'undefined'){
 			for(var i in vars.data){
 				if(sendData != ''){
@@ -72,7 +53,6 @@ pcf = {
 				sendData += i+'='+encodeURIComponent(vars.data[i]);
 			}
 		}
-		console.log(sendData);
 		if(vars.method != 'POST' && sendData != ''){
 			vars.url += '?'+sendData;
 		}
@@ -80,7 +60,6 @@ pcf = {
 		if(typeof(vars.timeout) == 'number'){
 			timeout = vars.timeout;
 		}
-		console.log(vars.url);
 		ajaxRequest.open(vars.method, vars.url, true);
 		if(vars.method == 'POST'){
 			ajaxRequest.setRequestHeader("Content-type","application/x-www-form-urlencoded");
@@ -237,129 +216,7 @@ pcf = {
 	gid: function(id){
 		return document.getElementById(id);
 	},
-	gmaps_draw: function(vars){
-		var mapZoom = 10;
-		if(typeof(vars.map_zoom) != 'undefined'){
-			mapZoom = vars.map_zoom;
-		}
-		var mapOptions = {
-	        zoom: mapZoom,
-	        center: new google.maps.LatLng(vars.center_lat, vars.center_lng),
-	        disableDefaultUI: true,
-	        mapTypeId: google.maps.MapTypeId.ROADMAP
-	    };
-	    if(typeof(vars.map_id) == 'undefined'){
-	    	console.log('A map id must be specified');
-	    	return false;
-	    }
-	    else{
-	    	if(typeof(vars.map_id) == 'string'){
-	    		vars.map_id = this.gid(vars.map_id);
-	    	}
-	    }
-	    var map = new google.maps.Map(vars.map_id, mapOptions);
-	    if(typeof(vars.markers) != 'undefined'){
-		    for (var i in vars.markers) {
-		        var marker = vars.markers[i];
-		        var myLatLng = new google.maps.LatLng(marker.lat, marker.lng);
-		        var defaults = {
-		        	position: myLatLng,
-		        	map: map,
-		        };
-		        var ignore = ['lat', 'lng', 'clickthru'];
-		        for(var m in marker){
-		        	if(ignore.indexOf(marker[m]) == -1){
-		        		defaults[m] = marker[m];
-		        	}
-		        }
-		        var newMarker = new google.maps.Marker(defaults);
-		        if(typeof(marker.clickthru) != 'undefined'){
-		        	newMarker.clickthru = marker.clickthru;
-		        	google.maps.event.addListener(newMarker, 'click', function() {
-			            var url = 'http://maps.google.com/?saddr='+vars.user_lat+','+vars.user_lng+'&daddr='+this.position.k+','+this.position.A;
-			            if(typeof(this.clickthru.url) != 'undefined'){
-			            	url = this.clickthru.url;
-			            }
-									if(typeof(this.clickthru.callback) == 'function'){
-										this.clickthru.callback();
-									}
-			            if(pcf.isPhad){
-			            	if(pcf.phadConsoleLog){
-			            		ph.u.log(this.clickthru.name);
-			            	}
-			            	ph.u.clickthru(url, this.clickthru.name, pcf.sessionID);
-			            }
-			            else{
-			            	console.log(this.clickthru.name);
-			            	window.open(url, '_blank');
-			            }
-			        });
-		        }
-	    	}
-    	}
-	},
-	gmaps_geo: function(vars){
-		console.log(vars);
-		var locType = 'address';
-		if(typeof(vars.loc_type) != 'undefined'){
-			locType = vars.loc_type;
-		}
-		if(this.geocoder == null){
-			this.geocoder = new google.maps.Geocoder();
-		}
-		var self = this;
-		if(locType == 'geo' || 'latLng'){
-			console.log(vars.address);
-			if(this.valid_geo(vars.address)){
-				var geo = vars.address.split(',');
-				var latLng = new google.maps.LatLng(geo[0], geo[1]);
-				this.geocoder.geocode( { 'latLng' : latLng}, function(results, status) {
-					self.gmaps_return(results, status, vars);
-			    });
-			}
-			else{
-				console.log('Must be a valid lat/lng set for reverse geocoding');
-				return false;
-			}
 
-		}		else{
-			console.log(vars.address);
-			this.geocoder.geocode( { 'address' : encodeURIComponent(vars.address)}, function(results, status) {
-				console.log(results);
-				console.log(status);
-				self.gmaps_return(results, status, vars);
-		    });
-		}
-	},
-	gmaps_return: function(results, status, vars){
-		if(status == google.maps.GeocoderStatus.OK) {
-			vars.callback(results);
-         }
-         else{
-         	if(typeof(vars.failover) == 'boolean'){
-         		if(vars.failover){
-         			var geoVars = {};
-         			geoVars.callback = vars.callback;
-         			if(typeof(vars.failover_callback) != 'undefined'){
-         				geoVars.callback = vars.failover_callback;
-         			}
-         			if(this.valid_zip(address)){
-						geoVars.data.type =  'postal_code';
-					}
-					if(this.valid_geo(address)){
-						geoVars.data.type =  'city_postal_by_geo';
-					}
-					if(typeof(geoVars.data.type) != 'undefined'){
-						geoVars.data.value = vars.address;
-					}
-         			this.geolocation(geoVars);
-         		}
-         	}
-         	else{
-         		vars.callback(false);
-         	}
-         }
-	},
 	init: function(vars){
 		var self = this;
 		if(typeof(vars.callback) == 'function'){
@@ -402,6 +259,14 @@ pcf = {
 		    newMetaTag.content = "width=device-width, minimum-scale=1.0, maximum-scale=1.0";
 		    document.getElementsByTagName('head')[0].appendChild( newMetaTag );
 		}
+		if(typeof(vars.modules) != 'undefined'){
+			this.module_load(vars.modules);
+		}
+		else{
+			this.init_ad();
+		}
+	},
+	init_ad: function(){
 		if(this.adInit != null){
 			if(this.isMraid){
 				if(mraid.getState() === 'loading')
@@ -410,7 +275,7 @@ pcf = {
 			}
 			else this.adInit();
 		}
-	},
+	}
 	iosVersionCheck: function() {
 	    var agent = window.navigator.userAgent,
 	        start = agent.indexOf( 'OS ' );
@@ -418,6 +283,30 @@ pcf = {
 	        return window.Number( agent.substr( start + 3, 3 ).replace( '_', '.' ) );
 	    }
 	    return 0;
+	},
+	module_load: function(mods){
+		if(this.scriptTag == null){
+			var s = document.getElementsByTagName('script');
+			for(var i=0; i<s.length; i++){
+				if(s[i].src.indexOf('pcf.js') != -1 || s[i].src.indexOf['pcf.min.js'] != -1){
+					this.scriptTag = s[i];
+					break;
+				}
+			}
+		}
+		var self = this;
+		var max = mods.length;
+		for(var i=0; i<max; i++){
+			var newScript = document.createElement('script');
+			newScript.src = this.modules[mod][i];
+			document.body.insertBefore(newScript, this.scriptTag);
+			newScript.onload = function(){
+				if(i == max){
+					self[mod] = new Object(window['pcf_module_'+mod]);
+					console.log(self);
+				}
+			}
+		}
 	},
 	mraid_ready: function(){
 		if(mraid.isViewable()) this.mraid_view_change();
@@ -529,127 +418,6 @@ pcf = {
 	valid_zip: function(zip){
        return /^\d{5}(-\d{4})?$/.test(zip);
     },
-	video: function(vars){
-		var self = this;
-		this.videoPlaying = true;
-		objCheck = ['style', 'attributes'];
-		if(!this.videoReload){
-			for(var i in vars){
-				if(objCheck.indexOf(i) != -1){
-					for(var v in vars[i]){
-						this.video_properties[i][v] = vars[i][v];
-					}
-				}
-				else{
-					this.video_properties[i] = vars[i];
-				}
-			}
-		}
-		if(this.video_properties.full_screen){
-			this.video_properties.attributes['webkit-playsinline'] = false;
-		}
-		var cid = this.video_properties.container_id;
-		this.video_properties.style.width = cid.offsetWidth+'px';
-		this.video_properties.style.height = cid.offsetHeight+'px';
-		var ar = this.video_properties.aspect_ratio.split(':');
-		if(this.video_properties.style.width == '0px' && this.video_properties.style.height == '0px'){
-			console.log('at least a height or a width for the video element or its parent element must be declared');
-			return false;
-		}
-		if(this.video_properties.style.width != '0px' && this.video_properties.style.height == '0px'){
-			this.video_properties.style.height = this.video_properties.style.width.replace('px','')*(ar[1]/ar[0])+'px';
-		}
-		if(this.video_properties.style.width == '0px' && this.video_properties.style.height != '0px'){
-			this.video_properties.style.width = this.video_properties.style.height.replace('px','')*(ar[0]/[1])+'px';
-		}
-		if(this.isPhad){
-			ph.v.play(this.video_properties.video_url, this.video_properties.name, this.campaignID, this.executionID, this.sessionID, cid);
-			if(this.video_properties.hide_close_btn){
-				var phVidClose = this.gid('phVidClose');
-				if(phVidClose){
-					phVidClose.style.display = 'none';
-				}
-			}
-		}
-		else{
-			var videoHtml = '<video src="'+this.video_properties.video_url+'"></video>';
-			cid.innerHTML = videoHtml;
-		}
-		var ph_videoElement = cid.getElementsByTagName('video')[0];
-		if(ph_videoElement){
-			for(var i in this.video_properties.attributes){
-				ph_videoElement.setAttribute(i, this.video_properties.attributes[i]);
-			}
-			for(var i in this.video_properties.style){
-				ph_videoElement.style[i] = this.video_properties.style[i];
-			}
-			ph_videoElement.addEventListener('play', function(){
-				if(self.video_properties.full_screen){
-					self.video_full_screen(ph_videoElement);
-				}
-				if(typeof(self.video_properties.play_callback )== 'function'){
-					self.video_properties.play_callback();
-				}
-			});
-			ph_videoElement.addEventListener('pause', function(){
-				if(typeof(self.video_properties.pause_callback )== 'function'){
-					self.video_properties.pause_callback();
-				}
-			});
-			if(this.video_properties.attributes.autoplay === true){
-				setTimeout(function(){
-					ph_videoElement.play();
-				},500);
-			}
-			if(!this.video_properties.full_screen){
-				ph_videoElement.addEventListener('webkitendfullscreen', function(){
-			        self.video_close();
-				});
-			}
-			ph_videoElement.addEventListener('ended', function(){
-		        self.video_close();
-		    });
-		}
-	},
-	video_close: function(){
-		if(this.isPhad){
-			ph.v.remove();
-		}
-		else{
-			this.video_properties.container_id.innerHTML = '';
-		}
-		this.videoPlaying = false;
-		if(typeof(this.video_properties.close_callback) == 'function'){
-			this.video_properties.close_callback();
-		}
-		if(this.video_properties.reload){
-			this.videoReload = true;
-			this.video_properties.attributes.autoplay = false;
-			this.video();
-		}
-	},
-	video_full_screen: function(elem){
-		var self = this;
-		var endEvent = 'endfullscreen';
-		if(elem.requestFullscreen) {
-		    elem.requestFullscreen();
-		}
-		else if(elem.mozRequestFullScreen) {
-		    elem.mozRequestFullScreen();
-		    endEvent = 'mozendfullscreen';
-		}
-		else if(elem.webkitRequestFullscreen) {
-			elem.webkitRequestFullscreen();
-			endEvent = 'webkitendfullscreen';
-		}
-		else if(elem.msRequestFullscreen) {
-		    elem.msRequestFullscreen();
-		    endEvent = 'msendfullscreen';
-		}
-		elem.addEventListener(endEvent, function(){
-	        self.video_close();
-		});
-	},
 }
 
 pcf.iosVersion = pcf.iosVersionCheck();
