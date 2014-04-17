@@ -552,7 +552,7 @@ Optional Specs:
 
 * data.subtype - For obtaining the user's location if an IP based lookup isn't desired.  Specify as geo or postal_code if desired.
 * data.value - Set to applicable value if data.suptype is geo or postal_code.
-* data.call_type - default is store.  While any number of different categories can potentially work, only retailertag has been fully tested with our system.  Separate multipe call types with a comma.  This spec will override the default.
+* data.call_type - default is store.  While any number of different categories can potentially work, only retailertag has been fully tested with our system.  Separate multiple call types with a comma.  This spec will override the default.
 * data.<category>ids - Used in conjunction with retailertag or any other category, and is requited if the related category is set.  Separate multiple category id's with a comma.
 * data.storeid - Used to look up categories from a specified store.  Please be aware that this value isn't necessary if the stores are being looked up along with a category, as the first store in the query result will override this value.
 * listingcount - Default is 50.
@@ -591,7 +591,7 @@ function storeReturn(data){
 	console.log(data);
 }
 
-//Optional values are shown as an example and can be omitted if satisfied with defaults.  Subtype and value must be specified for a geolocaiton lookup.
+//Optional values are shown as an example and can be omitted if satisfied with defaults.  Subtype and value must be specified for a geolocation lookup.
 pcf.shoplocal({
 	'callback': storeReturn,
 	'data': {
@@ -684,7 +684,7 @@ Returns Google Maps API information on a location.  May be a full or partial add
 
 Required Specs:
 * address - Full or partial address, city/state, postal code, lat/lng values, etc.
-* callback - The callback funciton.
+* callback - The callback function.
 
 Optional Specs:
 * failover - Default is false.  The system will determine which method to use based on the address qualities.
@@ -819,7 +819,7 @@ Example:
 
 ### Image tracker
 
- This functin provides the ability to fire off 1x1 image trackers for custom events other than the initialization.  For code-based trackers, please utilize the [AJAX](#standard-ajax-requests) function.
+ This function provides the ability to fire off 1x1 image trackers for custom events other than the initialization.  For code-based trackers, please utilize the [AJAX](#standard-ajax-requests) function.
 
 Example:
 
@@ -952,7 +952,7 @@ console.log(pcf.valid_zip('98034'));
 
 ### Technical Support
 
-Phluant Mobile is committed to helping our clients in successfully using this framework to design and develop their mobile advertisements.  Please feel free to utilize this repository's [issue tracker](../../issues) for general feedback, feature requests, bug reports, tech support questions, etc.  See a bug and know how to fix it, or know how to make this repository better?  Please feel free to fork this repository and submit a merge request.
+Phluant Mobile is committed to helping our clients in successfully using this framework to design and develop their mobile advertisements.  Please feel free to utilize this repository's [issue tracker](../../issues) for general feedback, feature requests, bug reports, tech support questions, etc.  See a bug and know how to fix it, or know how to make this repository better?  Please feel free to fork this repository, make necessary modifications, and submit a merge request.
 
 [top](#phluant-client-framework-library)
 
