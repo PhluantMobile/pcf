@@ -1,6 +1,6 @@
 # Phluant Client Framework Library
 
-The Phluant Client Framework (PCF) Libaray is a framework for use by Phluant Mobile's clients in developing their rich media campaign assets.  The concept of the framework is to provide our clients with a code base thiat works both inside and outside of our ad serving network, which will substantially reduce the amount of time needed to launch a rich media campaign.  It also provides a number of core features that are very common in the rich media campaigns we run.  It is written in pure JavaScript, so all core features will work independently of jQuery or any other JavaScript framework library.  Some features may require supporting libraries (i.e. Google Maps) and will be indicated as such in the documentation.  The feature list is below.  
+The Phluant Client Framework (PCF) Library is a framework for use by Phluant Mobile's clients in developing their rich media campaign assets.  The concept of the framework is to provide our clients with a code base that works both inside and outside of our legacy ad serving network, which will substantially reduce the amount of time needed to launch a rich media campaign.  It also provides a number of core features that are very common in the rich media campaigns we run.  It is written in pure JavaScript, so all core features will work independently of jQuery or any other JavaScript framework library.  Some features may require supporting libraries (i.e. Google Maps) and will be indicated as such in the documentation.  The feature list is below.  
 
 * [Element ID referencing](#element-id-referencing)
 * [Initialization](#initialization)
@@ -15,7 +15,7 @@ The Phluant Client Framework (PCF) Libaray is a framework for use by Phluant Mob
 	* [Weather](#weather)
 * [HTML5 geolocation prompt with optional IP lookup as a fallback](#geolocation-prompt)
 * [Store locator API call](#store-locator-api-call)
-* [Shoplocal API call](#shoplocal-api-call)
+* [ShopLocal API call](#shoplocal-api-call)
 * [Google Maps](#google-maps)
 	* [Geocoding](#geocoding)
 	* [Map Draw](#map-draw)
@@ -24,7 +24,7 @@ The Phluant Client Framework (PCF) Libaray is a framework for use by Phluant Mob
 * [Mobile and platform specific detection](#)
 * [iOS version detection (namely for iOS 7)](#ios-version-detection)
 * [Query string detection](#query-sring-detection)
-* [String Capitalization](#string-capitalization)
+* [Word Capitalization](#word-capitalization)
 * [Email Validation](#email-validation)
 * [Phone Number Validation](#phone-number-validation)
 * [Zip Code Validation](#zip-code-validation)
@@ -34,13 +34,13 @@ The Phluant Client Framework (PCF) Libaray is a framework for use by Phluant Mob
 
 ## How To Use
 
-Place the JavaScript tag referencing the frameowrk before any campaign specific code.  You may do this either in the head or inline.  We recommend you use the minified version for any non-development work.  For your convenience, we have a copy of the code on our CDN server you may use at http://mdn4.phluantmobile.net/jslib/pcf/.  Example tag:
+Place the JavaScript tag referencing the framework before any campaign specific code.  You may do this either in the head or inline.  We recommend you use the minified version for any non-development work.  For your convenience, we have a copy of the code on our CDN server you may use at http://mdn4.phluantmobile.net/jslib/pcf/.  Example tag:
 
 ```
 <script src="http://mdn4.phluantmobile.net/jslib/pcf/pcf.min.js"></script>
 ```
 
-All coding examples used in this documentaiton can utilize jQuery or other JavaScript framework library equivalents unless otherwise indicated.
+All coding examples used in this documentation can utilize jQuery or other JavaScript framework library equivalents unless otherwise indicated.
 
 [top](#phluant-client-framework-library)
 
@@ -48,7 +48,7 @@ All coding examples used in this documentaiton can utilize jQuery or other JavaS
 
 ### Element ID referencing
 
-The ads we serve up can be placed on a web site or mobile applicaiton with multiple ad instances.  This function ensures any element ID referenced in the code will have the namespacing attribute added to it if needed, with the standard ```document.getElementById()``` function being the fallback.
+The ads we serve up can be placed on a web site or mobile application with multiple ad instances.  This function ensures any element ID referenced in the code will have the name-spacing attribute added to it if needed, with the standard ```document.getElementById()``` function being the fallback.
 
 Example:
 
@@ -69,7 +69,7 @@ _Required for any campaign that will have multiple ad instances served, and is r
 
 ### Initialization
 
-This function initializes the framework for expandable ads and interstitial/banner ads that need close functionalty.  It also initializes any MRAID specific functionality if the MRAID framework is detected.  The developer will need to ensure an appropriate callback function is designated for contracting/closing the ad.  If the callback function contains object function calls, the object must have an explicit reference.
+This function initializes the framework for expandable ads and interstitial/banner ads that need close functionality.  It also initializes any MRAID specific functionality if the MRAID framework is detected.  The developer will need to ensure an appropriate callback function is designated for contracting/closing the ad.  If the callback function contains object function calls, the object must have an explicit reference.
 
 Specs:
 
@@ -131,7 +131,7 @@ _Required for all expandable ads._
 
 ### Contracts
 
-This funciton ensures our framework can properly close the ad, fires off the appropriate reporting tracker, automatically handle and MRAID specific requirements, and closes any video being played.  For assets running ourside of our ad serving network, a console log message will outputted indicating 'contracting'.  Because the ad specific close function was already passed to the framework with the initialization, it's only necessary to call the framework function.
+This function ensures our framework can properly close the ad, fires off the appropriate reporting tracker, automatically handle and MRAID specific requirements, and closes any video being played.  For assets running outside of our ad serving network, a console log message will outputted indicating 'contracting'.  Because the ad specific close function was already passed to the framework with the initialization, it's only necessary to call the framework function.
 
 Example:
 
@@ -161,7 +161,7 @@ Example of traditional hyperlink using the element ID as the reporting name:
 <script>
 var links = document.getElementsByTagName("a");
 for (var i=0; i<links.length; i++){
-    links[i].addEventListener("click", function (a){ 
+    links[i].addEventListener("click", function (a){
     	a.preventDefault();
     	pcf.clickthru({
     		'url': links[i].href,
@@ -196,7 +196,7 @@ _Required for all clickthroughs that are to be tracked, recommended in all other
 
 This function ensures that a specialized event can be entered into our tracking system, i.e. a user navigating to a certain section of the ad.  For assets running outside of our ad serving network, a console log message displaying the reporting name will be outputted.
 
-Example: 
+Example:
 
 ```
 <ul>
@@ -236,7 +236,7 @@ section2.addEventListener('click', function(){
 
 ### HTML5 Video
 
-This function ensures that any HTML5 video that needs to be played can have the proper code rendered, inside or outside of Phluant's ad serving network.  It isn't necessary to include any video tags in the HTML.  All that is needed is a video container element and the proper JavaScript code.  It is also possible for a video to auto play on an expansion.  All that would be required is to add in the function callup to the applicable expand code.  All videos automatically close on the completion of the video or contracting the ad.  For any other events that require closure, ```pcf.video_close()``` can be utlized.
+This function ensures that any HTML5 video that needs to be played can have the proper code rendered, inside or outside of Phluant's ad serving network.  It isn't necessary to include any video tags in the HTML.  All that is needed is a video container element and the proper JavaScript code.  It is also possible for a video to auto play on an expansion.  All that would be required is to add in the function call-up to the applicable expand code.  All videos automatically close on the completion of the video or contracting the ad.  For any other events that require closure, ```pcf.video_close()``` can be utilized.
 
 Required Attributes:
 
@@ -294,7 +294,7 @@ video_container.addEventListener('click', function(){
 
 ### Geolocation/Weather API calls
 
-Phluant maintains a web based application capable of providing geolocation and weather information based on location, using Maxmind and National Weather Service resources respectively.  All lookups are done by AJAX and require the developer to specifiy a callback function to return the data. Please be aware the mobile data providers have a wide latitude in assigning IP addresses to users, which may return an inaccurate location.  If geocoordinates can't be obtained from the publisher and percise geocoordinates are needed, it's recommended to use the [HTML5 Geolocation Prompt](#geolocation-prompt).
+Phluant maintains a web based application capable of providing geolocation and weather information based on location, using Maxmind and National Weather Service resources respectively.  All lookups are done by AJAX and require the developer to specify a callback function to return the data. Please be aware the mobile data providers have a wide latitude in assigning IP addresses to users, which may return an inaccurate location.  If geocoordinates can't be obtained from the publisher and precise geocoordinates are needed, it's recommended to use the [HTML5 Geolocation Prompt](#geolocation-prompt).
 
 
 #### Geolocation
@@ -364,11 +364,11 @@ All geolocation lookup methods return the following data:
 * data.results.dma_code:  The DMA code for the user’s current location.
 * data.results.area_code:  The prevailing area code for the user’s current location.  This has no correlation to the user’s actual area code.
 
-_For a comphrehensive address lookup, please see the [Google Maps Geocoding](#geocoding) function._
+_For a comprehensive address lookup, please see the [Google Maps Geocoding](#geocoding) function._
 
 #### Weather
 
-Weather Lookup Methods: 
+Weather Lookup Methods:
 
 * IP address (default)
 * Postal code
@@ -465,9 +465,9 @@ The weather data returned can vary based on custom input values.  The start_valu
 
 ### Store Locator API Call
 
-This function provides certain clients the ability to pull store location information information for various ads, namely to display the closest number of stores in relation to the user.  If your campaign has been set up with this feature, this API call will work for you.  All lookups are done by AJAX and require the developer to specifiy a callback function to return the data.
+This function provides certain clients the ability to pull store location information information for various ads, namely to display the closest number of stores in relation to the user.  If your campaign has been set up with this feature, this API call will work for you.  All lookups are done by AJAX and require the developer to specify a callback function to return the data.
 
-Lookup Methods: 
+Lookup Methods:
 
 * IP address (default)
 * Lat/lng
@@ -513,7 +513,7 @@ function storeReturn(data){
 	console.log(data);
 }
 
-//Distance and limit are shown as an example and can be omitted if satisfied with default values.  Subtype and value must be specified for a geolocaiton lookup.
+//Distance and limit are shown as an example and can be omitted if satisfied with default values.  Subtype and value must be specified for a geolocation lookup.
 pcf.get_stores({
 	'callback': storeReturn,
 	'data': {
@@ -531,11 +531,11 @@ pcf.get_stores({
 
 ---
 
-### Shoplocal API Call
+### ShopLocal API Call
 
-Becuase Phluant has an established relationship with Shoplocal, we are already set up to aggregate Shoplocal data to our ads. Any Phluant client with an established Shoplocal campaign can utilize this function to call in relevant Shoplocal store and category data.  Store and category data can be looked up all at once or separately.  All lookups are done by AJAX and require the developer to specifiy a callback function to return the data.  All data is returned in JavaScript object format.
+Because Phluant has an established relationship with ShopLocal, we are already set up to aggregate ShopLocal data to our ads. Any Phluant client with an established ShopLocal campaign can utilize this function to call in relevant ShopLocal store and category data.  Store and category data can be looked up all at once or separately.  All lookups are done by AJAX and require the developer to specify a callback function to return the data.  All data is returned in JavaScript object format.
 
-Lookup Methods: 
+Lookup Methods:
 
 * IP address (default)
 * Lat/lng
@@ -544,8 +544,8 @@ Lookup Methods:
 Required Specs:
 
 * callback - the callback function.
-* data.campaignid - the campaign ID assigned by Shoplocal.  This is NOT the same campaign ID assigned by Phluant.
-* data.company - the company name assigned by Shoplocal.
+* data.campaignid - the campaign ID assigned by ShopLocal.  This is NOT the same campaign ID assigned by Phluant.
+* data.company - the company name assigned by ShopLocal.
 
 
 Optional Specs:
@@ -553,16 +553,16 @@ Optional Specs:
 * data.subtype - For obtaining the user's location if an IP based lookup isn't desired.  Specify as geo or postal_code if desired.
 * data.value - Set to applicable value if data.suptype is geo or postal_code.
 * data.call_type - default is store.  While any number of different categories can potentially work, only retailertag has been fully tested with our system.  Separate multipe call types with a comma.  This spec will override the default.
-* data.<category>ids - Used in conjunction with retailertag or any other category, and is requited if the related category is set.  Separate multipe category id's with a comma.
+* data.<category>ids - Used in conjunction with retailertag or any other category, and is requited if the related category is set.  Separate multiple category id's with a comma.
 * data.storeid - Used to look up categories from a specified store.  Please be aware that this value isn't necessary if the stores are being looked up along with a category, as the first store in the query result will override this value.
 * listingcount - Default is 50.
 * listingimagewidth - Default is 90.
 * resultset - Default is full.
 * sortby - Default is 6.
-* data.pd - Used for some ShopLocal campaigns to override any date restrictions for development puropses.  This is a value assigned by ShopLocal.
+* data.pd - Used for some ShopLocal campaigns to override any date restrictions for development purposes.  This is a value assigned by ShopLocal.
 * data.name_flag - If set, the system will watch out for any store name containing this value and remove it from the results.
 
-Shoplocal by IP Example:
+ShopLocal by IP Example:
 
 ```
 <script>
@@ -583,7 +583,7 @@ pcf.shoplocal({
 </script>
 ```
 
-Shoplocal by Geo Example:
+ShopLocal by Geo Example:
 
 ```
 <script>
@@ -606,7 +606,7 @@ pcf.shoplocal({
 </script>
 ```
 
-Shoplocal by Postal Code Example:
+ShopLocal by Postal Code Example:
 
 ```
 <script>
@@ -614,7 +614,7 @@ function storeReturn(data){
 	console.log(data);
 }
 
-//Optional values are shown as an example and can be omitted if satisfied with defaults.  Subtype and value must be specified for a geolocaiton lookup.
+//Optional values are shown as an example and can be omitted if satisfied with defaults.  Subtype and value must be specified for a geolocation lookup.
 pcf.shoplocal({
 	'callback': storeReturn,
 	'data': {
@@ -633,7 +633,7 @@ pcf.shoplocal({
 * The bulk of all category data, using retailertag as an example, can be found in data.retailertag.xxxx.results.collection[0][0].
 * If an IP address or geolocation was used to calculate the user's address, the results will be returned.  The data can be found in data.user_info.results.
 
-*Because Shoplocal return data can vary and this library is still in beta, we working on expanding the return data samples.*
+*Because ShopLocal return data can vary and this library is still in beta, we working on expanding the return data samples.*
 
 [top](#phluant-client-framework-library)
 
@@ -641,7 +641,7 @@ pcf.shoplocal({
 
 ### Geolocation Prompt
 
-The funciton provides a means to prompt the user for their geocoordinates.  A callback function must be included to receive the results, which are returned as a JavaScript object if the user approves, or a false boolean if the user declines.  The developer can optionally specify to use the [Geolocation IP lookup](#geolocation) as a failover and specify a failover callback.
+The function provides a means to prompt the user for their geo-coordinates.  A callback function must be included to receive the results, which are returned as a JavaScript object if the user approves, or a false boolean if the user declines.  The developer can optionally specify to use the [Geolocation IP lookup](#geolocation) as a failover and specify a failover callback.
 
 Required Specs:
 * callback - The callback function.
@@ -736,7 +736,7 @@ Optional specs:
 	* markers[i].lat - the latitude of the desired marker.  Required for marker to be set.
 	* markers[i].lng - the longitude of the desired marker.  Required for marker to be set.
 	* markers[i].clickthru - an object containing relevant information for any marker to be a clickthrough.  Default is a Google Maps hyperlink using the original lat/lng values as the start point and the lat/lng values as the end point
-		* markers[i].clickthru.name - the name of the clickthru, used for reporting.  Essentially the same functionality as a standard clickthru.
+		* markers[i].clickthru.name - the name of the clickthrough, used for reporting.  Essentially the same functionality as a standard clickthrough.
 		* markers[i].clickthru.url - An optional URL value that will override the default Google Maps link.
 	* The Map Draw function supports all of the optional marker specifications.  For more detailed information,  please visit the [Google Maps Marker API page](https://developers.google.com/maps/documentation/javascript/markers)._
 
@@ -776,7 +776,7 @@ pcf.gmaps_draw(mapOptions);
 
 ### Standard AJAX Requests
 
-This function allows for AJAX requests.  Both GET and POST requests are supported.  If the expected return data is in JSON format, instructions can be passed to convert the data into a JavaScript object.  Using a callback function is optional, but will be necessary to use the response data.  Unless explicitly specified in a campaign contract, we are not responsible for ensuring cross-domain access or any other accessiblity issue concerning a non-Phluant AJAX source.
+This function allows for AJAX requests.  Both GET and POST requests are supported.  If the expected return data is in JSON format, instructions can be passed to convert the data into a JavaScript object.  Using a callback function is optional, but will be necessary to use the response data.  Unless explicitly specified in a campaign contract, we are not responsible for ensuring cross-domain access or any other accessibility issue concerning a non-Phluant AJAX source.
 
 Required specs:
 
@@ -788,7 +788,7 @@ Optional specs:
 * data - An object of any GET/POST key/value pairs needed to complete the request.
 * method - Can be either GET or POST.  Default is GET.
 * js_object - Can be set to true or false.  Should only be set if the expected return data is JSON.
-* timeout - The timeout for the AJAX call.  Default is 10000 miliseconds.
+* timeout - The timeout for the AJAX call.  Default is 10000 milliseconds.
 
 Example:
 
@@ -856,7 +856,7 @@ console.log(pcf.isMobile.any());
 
 ### iOS version detection
 
-This variable provides a method to detect what iOS version, if any, is being run.  This is namely for iOS 7, which currently has usability issues and bugs in the Safari browser.  Returns the numerical verision if an iOS version, returns 0 for all other devices.
+This variable provides a method to detect what iOS version, if any, is being run.  This is namely for iOS 7, which currently has usability issues and bugs in the Safari browser.  Returns the numerical version if an iOS version, returns 0 for all other devices.
 
 Example:
 
@@ -907,7 +907,7 @@ console.log(pcf.capitalize('jordan'));
 
 ### Email Validation
 
-This function returns a regex result for a valid email foramt.
+This function returns a regex result for a valid email format.
 
 Example:
 ```
@@ -952,7 +952,7 @@ console.log(pcf.valid_zip('98034'));
 
 ### Technical Support
 
-Phluant Mobile is committed to helping our clients in successfully using this framework to design and develop their mobile advertisements.  Please feel free to utilize this repository's [issue tracker](../../issues) for general feedback, feature requests, bug reports, tech support questions, etc.  
+Phluant Mobile is committed to helping our clients in successfully using this framework to design and develop their mobile advertisements.  Please feel free to utilize this repository's [issue tracker](../../issues) for general feedback, feature requests, bug reports, tech support questions, etc.  See a bug and know how to fix it, or know how to make this repository better?  Please feel free to fork this repository and submit a merge request.
 
 [top](#phluant-client-framework-library)
 
