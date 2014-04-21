@@ -29,11 +29,11 @@ pcf = {
 	isMraid: false,
 	isPhad: false,
 	modules: {
-		'gmaps': ['https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key=AIzaSyC83uUhHCl_0zza5YFNYaBKBeVojsqGaOc','http://localhost:8000/repositories/pcf/modules/gmaps/pcf.gmaps.js'],
+		'gmaps': ['http://localhost:8000/repositories/pcf/modules/gmaps/pcf.gmaps.js'],
 		'bmaps': ['http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0', 'http://localhost:8000/repositories/pcf/modules/bmaps/pcf.bmaps.js'],
 		'video': ['http://localhost:8000/repositories/pcf/modules/video/pcf.video.js'],
 	},
-	modsLoaded: true;
+	modsLoaded: true,
 	phadConsoleLog: false,
 	scriptTag: null,
 	hashtag: null,
@@ -45,20 +45,33 @@ pcf = {
 	ajax: function(vars){
 		ajaxRequest = new XMLHttpRequest();
 		var sendData = '';
+		var yql = false;
+		if(typeof(vars.yql) != 'undefined'){
+			yql = true;
+		}
 		if(typeof(vars.data) != 'undefined'){
 			for(var i in vars.data){
-				if(sendData != ''){
-					sendData += '&';
-				}
-				sendData += i+'='+encodeURIComponent(vars.data[i]);
+				sendData += ((sendData != '')?'&':'')+i+'='+encodeURIComponent(vars.data[i]);
 			}
 		}
-		if(vars.method != 'POST' && sendData != ''){
-			vars.url += '?'+sendData;
+		if((vars.method != 'POST' || yql) && sendData != ''){
+			vars.url += ((vars.url.indexOf('?') != -1)?'&':'?')+sendData;
 		}
 		var timeout = 10000;
 		if(typeof(vars.timeout) == 'number'){
 			timeout = vars.timeout;
+		}
+		if(yql){
+			var format = ((typeof(vars.yql.format) == 'string')? vars.yql.format : 'json');
+			var yql = 'format='+format+'&q='+encodeURIComponent('select * from '+format+' where url="' +vars.url+ '"');
+			vars.url = 'http://query.yahooapis.com/v1/public/yql';
+			console.log(yql);
+			if(vars.method != 'POST'){
+				vars.url += '?'+yql;
+			}
+			else{
+				sendData = yql;
+			}
 		}
 		ajaxRequest.open(vars.method, vars.url, true);
 		if(vars.method == 'POST'){
@@ -79,24 +92,32 @@ pcf = {
 		ajaxRequest.onreadystatechange = function(){
 			clearTimeout(ajaxTimeout);
 			if (ajaxRequest.readyState == 4 && ajaxRequest.status == 200) {
-				if(typeof(vars.js_object) != 'undefined'){
-					var resp = ajaxRequest.responseText;
-					if(vars.js_object){
-						resp = JSON.parse(resp);
+				var resp = ajaxRequest.responseText;
+				if(resp.status != 'error' && typeof(resp.request_info) == 'undefined'){
+					if(typeof(vars.js_object) != 'undefined'){
+						if(yql){
+							resp = {
+								'status': success,
+								'results': resp,
+							}
+						}
+						if(vars.js_object){
+							resp = JSON.parse(resp);
+						}
+					}
+					if(typeof(vars.callback) != 'undefined'){
+						vars.callback(resp);
 					}
 				}
-				if(typeof(vars.callback) != 'undefined'){
-					vars.callback(resp);
-				}
-        	}
-        	else{
-        		if(typeof(vars.callback) != 'undefined'){
-	        		vars.callback({
-	        			'status': 'error',
-	        			'request_info': ajaxRequest
-	        		});
-	        	}
-        	}
+      }
+    	else{
+    		if(typeof(vars.callback) != 'undefined'){
+      		vars.callback({
+      			'status': 'error',
+      			'request_info': ajaxRequest
+      		});
+      	}
+    	}
 		}
 	},
 	capitalize: function(str){
@@ -267,6 +288,7 @@ pcf = {
 		}
 	},
 	init_ad: function(){
+		console.log('in init ad');
 		if(this.adInit != null){
 			if(this.isMraid){
 				if(mraid.getState() === 'loading')
@@ -275,7 +297,7 @@ pcf = {
 			}
 			else this.adInit();
 		}
-	}
+	},
 	iosVersionCheck: function() {
 	    var agent = window.navigator.userAgent,
 	        start = agent.indexOf( 'OS ' );
@@ -296,14 +318,26 @@ pcf = {
 		}
 		var self = this;
 		var max = mods.length;
-		for(var i=0; i<max; i++){
-			var newScript = document.createElement('script');
-			newScript.src = this.modules[mod][i];
-			document.body.insertBefore(newScript, this.scriptTag);
-			newScript.onload = function(){
-				if(i == max){
-					self[mod] = new Object(window['pcf_module_'+mod]);
-					console.log(self);
+		max--;
+		console.log('max is '+max);
+		for(var i=0; i<mods.length; i++){
+			console.log('i is '+i);
+			var theMod = this.modules[mods[i]];
+			var mCount = theMod.length;
+			for(m=0; m<theMod.length; m++){
+				var newScript = document.createElement('script');
+				newScript.src = theMod[m];
+				document.body.insertBefore(newScript, this.scriptTag);
+				newScript.onload = function(){
+					console.log('in onload');
+					console.log(m);
+					if(m == mCount){
+						console.log('adding in new script, i is '+i+', max is '+max);
+						self[theMod] = new Object(window['pcf_module_'+theMod]);
+						if(i == max){
+							self.init_ad();
+						}
+					}
 				}
 			}
 		}
