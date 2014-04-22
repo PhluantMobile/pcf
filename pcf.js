@@ -313,7 +313,6 @@ pcf = {
     	}
 	},
 	gmaps_geo: function(vars){
-		console.log(vars);
 		var locType = 'address';
 		if(typeof(vars.loc_type) != 'undefined'){
 			locType = vars.loc_type;
@@ -322,8 +321,7 @@ pcf = {
 			this.geocoder = new google.maps.Geocoder();
 		}
 		var self = this;
-		if(locType == 'geo' || 'latLng'){
-			console.log(vars.address);
+		if(locType == 'geo' || locType == 'latLng'){
 			if(this.valid_geo(vars.address)){
 				var geo = vars.address.split(',');
 				var latLng = new google.maps.LatLng(geo[0], geo[1]);
@@ -337,10 +335,7 @@ pcf = {
 			}
 
 		}		else{
-			console.log(vars.address);
 			this.geocoder.geocode( { 'address' : encodeURIComponent(vars.address)}, function(results, status) {
-				console.log(results);
-				console.log(status);
 				self.gmaps_return(results, status, vars);
 		    });
 		}
