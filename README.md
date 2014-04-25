@@ -776,7 +776,7 @@ pcf.gmaps_draw(mapOptions);
 
 ### Standard AJAX Requests
 
-This function allows for AJAX requests.  Both GET and POST requests are supported.  Using Yahoo Query Language (YQL) is also supported for enhanced CORS capabilities.  If the expected return data is in JSON format, instructions can be passed to convert the data into a JavaScript object.  Using a callback function is optional, but will be necessary to use the response data. Unless explicitly specified in a campaign contract, Phluant is not responsible for ensuring cross-domain access or any other accessibility issue concerning a non-Phluant AJAX source.  YQL may not resolve all cross-domain access issues.
+This function allows for AJAX requests.  Both GET and POST requests are supported.  Using Yahoo Query Language (YQL) is also supported for enhanced CORS capabilities.  If the expected return data is in 100% JSON or XML format, instructions can be passed to convert the data into a JavaScript object.  Using a callback function is optional, but will be necessary to use the response data. Unless explicitly specified in a campaign contract, Phluant is not responsible for ensuring cross-domain access or any other accessibility issue concerning a non-Phluant AJAX source.  YQL may not resolve all cross-domain access issues.
 
 Required specs:
 
