@@ -1,4 +1,4 @@
-/*Phluant Client Framework v0.9 | (c) 2014 Phluant, Inc. All rights Reserved | See documentation for more details*/
+/*Phluant Client Framework v0.1 | (c) 2014 Phluant, Inc. All rights Reserved | See documentation for more details*/
 pcf = {
 	adInit: null,
 	winLoaded: false,
@@ -63,6 +63,11 @@ pcf = {
 		ajaxRequest = new XMLHttpRequest();
 		var sendData = '';
 		var yql = false;
+		var asynch = true;
+		var self = this;
+		if(typeof(vars.asynch) == 'boolean'){
+			asynch = vars.asynch;
+		}
 		if(typeof(vars.yql) != 'undefined'){
 			yql = true;
 		}
@@ -89,7 +94,7 @@ pcf = {
 				sendData = yql;
 			}
 		}
-		ajaxRequest.open(vars.method, vars.url, true);
+		ajaxRequest.open(vars.method, vars.url, asynch);
 		if(vars.method == 'POST'){
 			ajaxRequest.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 			ajaxRequest.send(sendData);
@@ -117,7 +122,7 @@ pcf = {
 				}
 				if(typeof(vars.js_object) != 'undefined'){
 					if(vars.js_object){
-						resp = JSON.parse(resp);
+						resp = ajaxRequest.getResponseHeader("Content-Type").indexOf('xml') != -1 ? self.xmlToObject(resp, true): JSON.parse(resp);
 					}
 				}
 				if(typeof(vars.callback) != 'undefined'){
@@ -197,7 +202,6 @@ pcf = {
 		}
 	},
 	geolocation: function(vars){
-		console.log(vars);
 		var varsExport = {
 			'url': this.webServiceUrl+'geolocation/export',
 			'method': 'GET',
@@ -227,7 +231,6 @@ pcf = {
         });
 	},
 	get_stores: function(vars){
-		console.log(vars);
 		var varsExport = {
 			'url': this.webServiceUrl+'phluant/export',
 			'method': 'GET',
@@ -239,7 +242,7 @@ pcf = {
 			}
 		};
 		if(typeof(vars.data.campaign_id) == 'undefined'){
-			console.log('campaign_id is a required attribute for this function');
+			console.error('campaign_id is a required attribute for this function');
 			return false;
 		}
 		for(var i in vars.data){
@@ -263,7 +266,7 @@ pcf = {
 	        mapTypeId: google.maps.MapTypeId.ROADMAP
 	    };
 	    if(typeof(vars.map_id) == 'undefined'){
-	    	console.log('A map id must be specified');
+	    	console.error('A map id must be specified');
 	    	return false;
 	    }
 	    else{
@@ -330,7 +333,7 @@ pcf = {
 			    });
 			}
 			else{
-				console.log('Must be a valid lat/lng set for reverse geocoding');
+				console.error('Must be a valid lat/lng set for reverse geocoding');
 				return false;
 			}
 
@@ -386,11 +389,11 @@ pcf = {
 			/*
 			//commented out requirements for init and close functionality for the time being
 			if(this.adInit == null){
-				console.log('An initialization function must be set for MRAID to work properly.');
+				console.error('An initialization function must be set for MRAID to work properly.');
 				return false;
 			}
 			if(this.closeCallback == null){
-				console.log('A close function must be set for MRAID to work properly.');
+				console.error('A close function must be set for MRAID to work properly.');
 				return false;
 			}
 			*/
@@ -467,35 +470,171 @@ pcf = {
 		}
 	},
 	shoplocal: function(vars){
-		var varsExport = {
-			'url': this.webServiceUrl+'phluant/export',
-			'method': 'GET',
-			'callback': vars.callback,
-			'js_object': true,
-			'data': {
-				'call_type': 'store',
-			}
+		var settings = {
+			storeid: null,
+			listingcount: 50,
+			resultset: 'full',
+			sortby: 6,
+			listingimagewidth: 60,
 		};
-		for(var i in vars.data){
-			varsExport.data[i] = vars.data[i];
+		for(var s in settings){
+			if(typeof(vars.data[s]) != 'undefined'){
+				settings[s] = vars.data[s];
+			}
+		}
+		var callType = null;
+		var returnData = {};
+		var self = this;
+		if(typeof(vars.data.call_type) != 'undefined'){
+			callType = vars.data.call_type.split(',');
+			for(var i=0; i<callType.length; i++){
+				if(callType[i] != 'store'){
+					if(typeof(vars.data[callType[i]+'ids']) == 'undefined'){
+						console.error('data.'+callType[i]+'ids must be defined for the respective lookup.');
+						return false;
+					}
+					else{
+						returnData[callType[i]] = {};
+						var tags = vars.data[callType[i]+'ids'].split(',');
+						for(var t=0; t<tags.length; t++){
+							returnData[callType[i]][tags[t]] = null;
+						}
+					}
+				}
+			}
 		}
 		var req = ['company', 'campaignid'];
 		for(var i=0; i<req.length; i++){
-			if(typeof(varsExport.data[req[i]]) == 'undefined'){
-				console.log(req[i]+' is a required attribute for the shoplocal function.');
+			if(typeof(vars.data[req[i]]) == 'undefined'){
+				console.error('data.'+req[i]+' is a required attribute for the shoplocal function.');
 				return false;
 			}
 		}
-		if(varsExport.data.subtype == 'postal_code' && !this.valid_zip(varsExport.data.value)){
-			console.log('invalid postal code format :'.varsExport.data.value);
-			return false;
+		var citystatezip = null;
+		var geoCall = {
+			callback: geoCallback,
+		};
+		if(typeof(vars.data.location) != 'undefined'){
+			if(pcf.valid_zip(vars.data.location)){
+				citystatezip = vars.data.location;
+				determineStep();
+			}
+			else if(pcf.valid_geo(vars.data.location)){
+				geoCall.data = {
+					type: 'city_postal_by_geo',
+					value: vars.data.location
+				};
+			}
+			else{
+				console.error('Invalid location format.  Must be either a US postal code or lat/lng coordinates.  See documentation for more details.');
+				return false;
+			}
 		}
-		if(varsExport.data.call_type.indexOf('retailertag') != -1 && typeof(varsExport.data.retailertagids) == 'undefined'){
-			console.log('category_tree_id must be defined for a shoplocal category lookup.');
-			return false;
+		else{
+			pcf.geolocation(geoCall);
 		}
-		varsExport.data.type = 'shoplocal';
-		this.ajax(varsExport);
+		function determineStep(){
+			if(settings.storeid == null){
+				fetchStore();
+			}
+			else if(callType != null){
+				var proceed = true;
+				for(var i=0; i<callType.length; i++){
+					for(var t in returnData[callType[i]]){
+						if(returnData[callType[i]][t] == null){
+							fetchCall(callType[i], t);
+							proceed = false;
+							break;
+						}
+					}
+				}
+				if(proceed){
+					returnInfo();
+				}
+			}
+			else{
+				returnInfo();
+			}
+		}
+		function fetchStore(){
+			var storeInfo = {
+				url: 'http://api.shoplocal.com/'+vars.data.company+'/2012.1/xml/getstores.aspx?campaignid='+vars.data.campaignid+'&citystatezip='+citystatezip,
+				method: 'GET',
+				yql: {
+					format: 'xml',
+				},
+				callback: function(d){
+					if(d.status != 'error'){
+						var data = self.xmlToObject(d.results, true);
+						var storeData = data.query.results.content;
+						var stores = storeData.collection.data;
+						settings.storeid = null;
+						for(var i in stores){
+							var grab = true;
+							if(typeof(vars.data.name_flag) != 'undefined' && stores[i]['@attributes'].name.indexOf(vars.data.name_flag) != -1){
+								grab = false;
+							}
+							if(stores[i]['@attributes'].contentflag != 'Y'){
+								grab = false;
+							}
+							if(grab && settings.storeid == null){
+								settings.storeid = stores[i]['@attributes'].storeid;
+							}
+							if(!grab){
+								delete storeData.collection.data[i];
+							}
+						}
+						returnData.stores = {
+							status: 'success',
+							shoplocal_url: this.url,
+							results: storeData,
+						}
+						determineStep();
+					}
+				},
+			}
+			if(typeof(vars.data.pd) != 'undefined'){
+				storeInfo.url += '&pd='+vars.data.pd;
+			}
+			pcf.ajax(storeInfo);
+		}
+		function fetchCall(callType, treeId){
+				var callInfo = {
+					url: 'http://api.shoplocal.com/target/2012.2/xml/get'+callType+'listings.aspx?campaignid='+vars.data.campaignid+'&'+callType+'ids='+treeId,
+					method: 'GET',
+					yql: {
+						format: 'xml',
+					},
+					callback: function(d){
+						if(d.status != 'error'){
+							var data = self.xmlToObject(d.results, true);
+							returnData[callType][treeId] = {
+								status: 'success',
+								shoplocal_url: this.url,
+								results: data.query.results.content,
+							};
+							determineStep();
+						}
+					},
+				};
+				for(var s in settings){
+					callInfo.url += '&'+s+'='+settings[s];
+				}
+				if(typeof(vars.data.pd) != 'undefined'){
+					callInfo.url += '&pd='+vars.data.pd;
+				}
+				pcf.ajax(callInfo);
+		}
+		function geoCallback(d){
+			if(d.status == 'success'){
+				returnData.user_info = d.results;
+				citystatezip = d.results.postal_code;
+				determineStep();
+			}
+		}
+		function returnInfo(){
+			vars.callback(returnData);
+		}
 	},
 	track: function(name){
 		if(this.isPhad){
@@ -514,7 +653,6 @@ pcf = {
     },
 	valid_geo: function(geoTest){
 		passed = true;
-		console.log(geoTest);
 		geoTest = geoTest.split(',');
 		if(typeof(geoTest) == 'object'){
 			for(var i=0; i<geoTest.length; i++){
@@ -562,7 +700,7 @@ pcf = {
 		this.video_properties.style.height = cid.offsetHeight+'px';
 		var ar = this.video_properties.aspect_ratio.split(':');
 		if(this.video_properties.style.width == '0px' && this.video_properties.style.height == '0px'){
-			console.log('at least a height or a width for the video element or its parent element must be declared');
+			console.error('at least a height or a width for the video element or its parent element must be declared');
 			return false;
 		}
 		if(this.video_properties.style.width != '0px' && this.video_properties.style.height == '0px'){
@@ -659,14 +797,46 @@ pcf = {
 	        self.video_close();
 		});
 	},
+	xmlToObject: function(xml, parse) {
+		if(parse){
+			var parser = new DOMParser();
+			xml = parser.parseFromString(xml,"text/xml");
+		}
+		var obj = {};
+		if (xml.nodeType == 1) {
+			if (xml.attributes.length > 0) {
+			obj["@attributes"] = {};
+				for (var j = 0; j < xml.attributes.length; j++) {
+					var attribute = xml.attributes.item(j);
+					obj["@attributes"][attribute.nodeName] = attribute.nodeValue;
+				}
+			}
+		} else if (xml.nodeType == 3) {
+			obj = xml.nodeValue;
+		}
+		if (xml.hasChildNodes()) {
+			for(var i = 0; i < xml.childNodes.length; i++) {
+				var item = xml.childNodes.item(i);
+				var nodeName = item.nodeName;
+				if (typeof(obj[nodeName]) == "undefined") {
+					obj[nodeName] = this.xmlToObject(item, false);
+				} else {
+					if (typeof(obj[nodeName].push) == "undefined") {
+						var old = obj[nodeName];
+						obj[nodeName] = [];
+						obj[nodeName].push(old);
+					}
+					obj[nodeName].push(this.xmlToObject(item, false));
+				}
+			}
+		}
+		return obj;
+	},
 }
-
 pcf.iosVersion = pcf.iosVersionCheck();
-
 if(typeof(ph) == 'object'){
 	pcf.isPhad = true;
 }
-
 window.addEventListener('load', function(){
 	pcf.winLoaded = true;
 });

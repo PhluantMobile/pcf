@@ -788,9 +788,9 @@ Optional specs:
 * yql - Default is false.  Set to either true, or list as an object to specify the format.
 	* yql.format - Default is json if yql is utilized.  Can be changed to xml or any other YQL supported format.
 * data - An object of any GET/POST key/value pairs needed to complete the request.
-* method - Can be either GET or POST.  Default is GET.
-* js_object - Can be set to true or false.  Should only be set if the expected return data is JSON.
+* method - Default is false.  Should only be set to true if the expected return data is JSON or XML.
 * timeout - The timeout for the AJAX call.  Default is 10000 milliseconds.
+* asynch - Default is true.  Set to false for synchronous AJAX calls.
 
 Example:
 
