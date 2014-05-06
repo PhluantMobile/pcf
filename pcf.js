@@ -58,7 +58,7 @@ pcf = {
 	campaignID: null,
 	sessionID: null,
 	container: null,
-	webServiceUrl: 'http://lbs.phluant.com/web_services/',
+	webServiceUrl: 'http://lbs.phluant.com/web_services2/',
 	ajax: function(vars){
 		ajaxRequest = new XMLHttpRequest();
 		var sendData = '';
